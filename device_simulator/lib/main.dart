@@ -50,7 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
           _simulationRunning = true;
         });
 
-        fr.readOneEntryPeriodically(10, _deviceId);
+        fr.readOneEntryPeriodically(1, _deviceId);
         fr.setKeepReading(true);
       }
     } else {
@@ -77,12 +77,12 @@ class _MyHomePageState extends State<MyHomePage> {
             Container(
               width: 500,
               child: TextField(
-              controller: _deviceIdController,
-              decoration: const InputDecoration(
-                labelText: 'Enter Device ID',
-                border: OutlineInputBorder(),
+                controller: _deviceIdController,
+                decoration: const InputDecoration(
+                  labelText: 'Enter Device ID',
+                  border: OutlineInputBorder(),
+                ),
               ),
-            ),
             ),
             const SizedBox(height: 16.0),
             Text(
