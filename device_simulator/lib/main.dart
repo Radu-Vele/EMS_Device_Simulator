@@ -50,7 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
           _simulationRunning = true;
         });
 
-        fr.readOneEntryPeriodically(1, _deviceId);
+        fr.readOneEntryPeriodically(5, _deviceId);
         fr.setKeepReading(true);
       }
     } else {

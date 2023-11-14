@@ -46,7 +46,7 @@ class CsvFileReader {
 
   String formatMessage(deviceId, readValue) {
     Map<String, String> messageMap = {
-      'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
+      'timestamp': (DateTime.now().millisecondsSinceEpoch).toString(),
       'device_id': deviceId,
       'measurement_value': readValue.toString(),
     };
