@@ -39,7 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _toggleSimulation() {
     if (!_simulationRunning) {
       setState(() {
-        _deviceId = _deviceIdController.text;
+        _deviceId = _deviceIdController.text.trim();
       });
 
       if (_deviceId == '') {

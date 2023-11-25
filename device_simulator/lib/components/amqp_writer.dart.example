@@ -1,0 +1,29 @@
+import 'package:dart_amqp/dart_amqp.dart';
+import 'package:flutter/material.dart';
+import 'package:process_run/shell.dart';
+
+class AmpqWriter {
+  /// Not working a.t.m - lost connection
+  sendAmpqMessage(String messageToSend) async {
+    ConnectionSettings settings = ConnectionSettings(
+      host: "your-host",
+      virtualHost: "your-vhost",
+      port: 5672,
+      authProvider: const PlainAuthenticator(
+          "username", "password"),
+    );
+    Client client = Client(settings: settings);
+    Channel channel = await client.channel();
+    Queue queue = await channel.queue("queue_name", durable: true);
+    queue.publish(messageToSend);
+    client.close();
+  }
+
+  /// Backup method in case dart-amqp does not work properly
+  /// (DEBUG only)
+  runPythonScriptToSendAmpqMessage(String message) async {
+    var shell = Shell();
+    debugPrint(message);
+    await shell.run("python ./scripts/amqp_script.py '$message'");
+  }
+}

@@ -35,8 +35,8 @@ class CsvFileReader {
         debugPrint("Read value: $line");
         _readLines++;
         debugPrint('$_readLines');
-        await ampqWriter
-            .runPythonScriptToSendAmpqMessage(formatMessage(deviceId, line));
+        //await ampqWriter.runPythonScriptToSendAmpqMessage(formatMessage(deviceId, line));
+        await ampqWriter.sendAmpqMessage(formatMessage(deviceId, line));
       });
       if (!_keepReading) {
         timer.cancel();
