@@ -44,4 +44,4 @@ app.*.map.json
 /android/app/release
 
 # Secret file
-/lib/components/amqp_writer.dart
+amqp_writer.dart
