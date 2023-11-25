@@ -20,7 +20,8 @@ class CsvFileReader {
     _readLines = 0;
   }
 
-  readOneEntryPeriodically(int periodSec, String deviceId) async {
+  readOneEntryPeriodically(int periodSec, String deviceId, int offset, Function(String) updateLog) async {
+    _readLines = offset;
     Timer.periodic(Duration(seconds: periodSec), (timer) {
       if (!_keepReading) {
         timer.cancel();
@@ -32,11 +33,9 @@ class CsvFileReader {
           .skip(_readLines)
           .take(1)
           .forEach((line) async {
-        debugPrint("Read value: $line");
         _readLines++;
-        debugPrint('$_readLines');
-        //await ampqWriter.runPythonScriptToSendAmpqMessage(formatMessage(deviceId, line));
         await ampqWriter.sendAmpqMessage(formatMessage(deviceId, line));
+        updateLog(formatMessage(deviceId, line));
       });
       if (!_keepReading) {
         timer.cancel();

@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:device_simulator/components/csv_file_reader.dart';
 import 'package:flutter/material.dart';
 
@@ -32,9 +34,22 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   bool _simulationRunning = false;
+
   String _deviceId = '';
   final TextEditingController _deviceIdController = TextEditingController();
+  String _deviceIdError = '';
+
+  int _offset = 0;
+  final TextEditingController _offsetController = TextEditingController();
+  String _offsetError = '';
+
   CsvFileReader fr = CsvFileReader();
+
+  String _logText = '';
+
+  void updateLog(String text) {
+    setState(() => _logText = '$_logText\n$text');
+  }
 
   void _toggleSimulation() {
     if (!_simulationRunning) {
@@ -42,15 +57,31 @@ class _MyHomePageState extends State<MyHomePage> {
         _deviceId = _deviceIdController.text.trim();
       });
 
+      if (_offsetController.text != "") {
+        int? parsedInt = int.tryParse(_offsetController.text.trim());
+        if (parsedInt != null) {
+          setState(() {
+            _offset = parsedInt;
+          });
+          _offsetError = '';
+        } else {
+          setState(() {
+            _offsetError = "Must imput a valid number (default is 0)";
+          });
+        }
+      }
+
       if (_deviceId == '') {
-        debugPrint("Invalid device Id - empty");
+        setState(() {
+          _deviceIdError = "Invalid device Id - empty";
+        });
       } else {
-        debugPrint("Started simulation with id $_deviceId");
+        _deviceIdError = "";
         setState(() {
           _simulationRunning = true;
         });
-
-        fr.readOneEntryPeriodically(5, _deviceId);
+        _logText = 'Sent messages:';
+        fr.readOneEntryPeriodically(5, _deviceId, _offset, updateLog);
         fr.setKeepReading(true);
       }
     } else {
@@ -59,6 +90,8 @@ class _MyHomePageState extends State<MyHomePage> {
         _simulationRunning = false;
         _deviceId = '';
         _deviceIdController.text = '';
+        _offset = 0;
+        _offsetController.text = '';
       });
     }
   }
@@ -74,6 +107,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            const SizedBox(height: 16.0),
             Container(
               width: 500,
               child: TextField(
@@ -84,6 +118,28 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
             ),
+            if (_deviceIdError.isNotEmpty)
+              Text(
+                _deviceIdError,
+                style: const TextStyle(color: Colors.red),
+              ),
+            const SizedBox(height: 16.0),
+            Container(
+              width: 400,
+              child: TextField(
+                controller: _offsetController,
+                decoration: const InputDecoration(
+                  labelText:
+                      'Enter the offset in the data source file (optional)',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
+            if (_offsetError.isNotEmpty)
+              Text(
+                _offsetError,
+                style: const TextStyle(color: Colors.red),
+              ),
             const SizedBox(height: 16.0),
             Text(
               'Press the button below to start the simulation',
@@ -97,6 +153,14 @@ class _MyHomePageState extends State<MyHomePage> {
                   ? const Icon(Icons.pause_rounded)
                   : const Icon(Icons.play_arrow),
             ),
+            const SizedBox(height: 16.0),
+            Expanded(
+                child: SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    child: Text(
+                      _logText,
+                      style: const TextStyle(fontSize: 16),
+                    ))),
           ],
         ),
       ),
