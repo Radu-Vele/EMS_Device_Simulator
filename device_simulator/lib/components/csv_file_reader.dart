@@ -20,11 +20,13 @@ class CsvFileReader {
     _readLines = 0;
   }
 
-  readOneEntryPeriodically(int periodSec, String deviceId, int offset, Function(String) updateLog) async {
+  readOneEntryPeriodically(int periodSec, String deviceId, int offset,
+      Function(String) updateLog) async {
     _readLines = offset;
     Timer.periodic(Duration(seconds: periodSec), (timer) {
       if (!_keepReading) {
         timer.cancel();
+        return;
       }
       Stream<List<int>> inputStream = _inputFile.openRead();
       inputStream
@@ -39,6 +41,7 @@ class CsvFileReader {
       });
       if (!_keepReading) {
         timer.cancel();
+        return;
       }
     });
   }
